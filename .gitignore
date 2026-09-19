@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# site data (local backend) — runtime state, regenerated from src/lib/content/seed.ts
+data/
+!data/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
+.env*.local
+.env
+
+.lighthouseci/
+
+.next-prod/
+
+backups/

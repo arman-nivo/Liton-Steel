@@ -1,0 +1,13 @@
+# Uploaded by `vercel` CLI. Unlike .gitignore, site content (data/, public/uploads/) IS shipped
+# because the local backend reads it at runtime on Vercel's read-only filesystem.
+node_modules
+.next
+.next-prod
+.env*
+!.env.example
+backups
+.lighthouseci
+*.tsbuildinfo
+data/*.log
+data/versions
+data/*.tmp
