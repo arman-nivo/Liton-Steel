@@ -41,8 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 # site data (local backend) — runtime state, regenerated from src/lib/content/seed.ts
-data/
-!data/.gitkeep
+# (anchored to the root: a bare `data/` also ignored the src/lib/data source folder)
+/data/
+!/data/.gitkeep
 public/uploads/*
 !public/uploads/.gitkeep
 .env*.local
@@ -51,5 +52,6 @@ public/uploads/*
 .lighthouseci/
 
 .next-prod/
+.next-verify/
 
 backups/
