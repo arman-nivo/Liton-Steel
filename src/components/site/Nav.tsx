@@ -81,10 +81,12 @@ export function Nav({ items, locale, brand, pdfUrl }: { items: NavItem[]; locale
 }
 
 export function LanguageToggle({ locale, path }: { locale: Locale; path: string }) {
+  // No viewport prefetch: the toggle is on screen on every page, and prefetching would download the whole
+  // other-language page (~40 KB) for every visitor, though few switch.
   return (
     <div className="ls-lang" role="group" aria-label="Language">
-      <Link href={localePath("en", path)} aria-current={locale === "en" ? "true" : undefined} hrefLang="en">EN</Link>
-      <Link href={localePath("bn", path)} aria-current={locale === "bn" ? "true" : undefined} hrefLang="bn" lang="bn">বাং</Link>
+      <Link href={localePath("en", path)} prefetch={false} aria-current={locale === "en" ? "true" : undefined} hrefLang="en">EN</Link>
+      <Link href={localePath("bn", path)} prefetch={false} aria-current={locale === "bn" ? "true" : undefined} hrefLang="bn" lang="bn">বাং</Link>
     </div>
   );
 }

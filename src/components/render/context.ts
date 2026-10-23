@@ -1,6 +1,17 @@
+import type { ComponentType } from "react";
 import type { Locale, MediaItem, Node, Project, Site } from "@/lib/schema/types";
 import { cls } from "@/lib/schema/css";
 import { cn } from "@/lib/utils";
+import type { EditableTextProps } from "./elements/EditableText";
+
+/**
+ * Editor-only components, handed in by the editor canvas. The public site never imports them,
+ * which keeps the editor store, templates and inline-editing code out of visitors' JavaScript.
+ */
+export interface EditorUI {
+  InsertionPoint: ComponentType<{ parentId: string; index: number; kind: "section" | "element" }>;
+  EditableText: ComponentType<EditableTextProps>;
+}
 
 export interface RenderCtx {
   locale: Locale;
@@ -10,6 +21,7 @@ export interface RenderCtx {
   site: Site;
   /** stagger index for first-section entrance animations (computed by RenderPage) */
   animIndex?: Map<string, number>;
+  ui?: EditorUI;
 }
 
 /** Common DOM attributes for every rendered node. */

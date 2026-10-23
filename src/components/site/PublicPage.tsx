@@ -1,10 +1,10 @@
 import type { Locale, Page, Site } from "@/lib/schema/types";
 import { mediaMap } from "@/lib/content/media";
 import { RenderPage } from "../render/RenderNode";
-import type { RenderCtx } from "../render/context";
+import type { EditorUI, RenderCtx } from "../render/context";
 
-export function ctxFor(site: Site, locale: Locale, editable = false): RenderCtx {
-  return { locale, editable, media: mediaMap(site), projects: site.collections.projects, site };
+export function ctxFor(site: Site, locale: Locale, editable = false, ui?: EditorUI): RenderCtx {
+  return { locale, editable, media: mediaMap(site), projects: site.collections.projects, site, ui };
 }
 
 export function PublicPage({ site, page, locale }: { site: Site; page: Page; locale: Locale }) {

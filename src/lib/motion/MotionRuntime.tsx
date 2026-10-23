@@ -27,7 +27,7 @@ export function MotionRuntime({ theme }: { theme: MotionLevel }) {
       const { gsap, ScrollTrigger } = g();
       if (level === "cinematic" && window.matchMedia("(hover: hover)").matches) lenisMod.startLenis();
       const ctx = gsap.context(() => {});
-      const first = document.querySelector(".ls-page > section:first-child");
+      const first = document.querySelector(".ls-page > section:first-of-type");
       const io = new IntersectionObserver((entries) => {
         for (const e of entries) if (e.isIntersecting) { io.unobserve(e.target); ctx.add(() => applyPreset(e.target as HTMLElement, level)); }
       }, { rootMargin: "70% 0px 70% 0px" });

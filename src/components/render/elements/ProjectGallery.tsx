@@ -73,7 +73,9 @@ export function ProjectGallery({ node, ctx }: { node: Node; ctx: RenderCtx }) {
           );
           return ctx.editable
             ? <div className="card" key={p.id}>{inner}</div>
-            : <Link className="card" key={p.id} href={localePath(ctx.locale, `/projects/${p.slug}`)} data-anim="magnetic-hover" data-anim-opts='{"intensity":0.4}'>{inner}</Link>;
+            // prefetch={false}: scrolling a 19-card grid would otherwise download every project page; the page
+            // transition prefetches the clicked one instead
+            : <Link className="card" key={p.id} href={localePath(ctx.locale, `/projects/${p.slug}`)} prefetch={false} data-anim="magnetic-hover" data-anim-opts='{"intensity":0.4}'>{inner}</Link>;
         })}
         {!projects.length ? <p style={{ opacity: 0.7 }}>No projects in this category yet.</p> : null}
       </div>

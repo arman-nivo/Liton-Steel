@@ -4,7 +4,7 @@ import { useEditor } from "@/lib/store/editor";
 import { sanitizeHtml } from "@/lib/utils";
 import type { Locale } from "@/lib/schema/types";
 
-interface Props extends React.HTMLAttributes<HTMLElement> {
+export interface EditableTextProps extends React.HTMLAttributes<HTMLElement> {
   nodeId: string;
   field?: string;
   locale: Locale;
@@ -13,7 +13,7 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
 }
 
 /** Inline (double-click) text editing for headings, paragraphs and rich text. */
-export function EditableText({ nodeId, field = "text", locale, html, tag, ...rest }: Props) {
+export function EditableText({ nodeId, field = "text", locale, html, tag, ...rest }: EditableTextProps) {
   const editing = useEditor((s) => s.editingId === nodeId);
   const setEditing = useEditor((s) => s.setEditing);
   const updateNode = useEditor((s) => s.updateNode);

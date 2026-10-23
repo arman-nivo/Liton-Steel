@@ -19,7 +19,7 @@ export function ImageCollage({ node, ctx }: { node: Node; ctx: RenderCtx }) {
   const layout = node.props.layout && node.props.layout !== "auto" ? node.props.layout : node.computed?.layout ?? autoLayout(items.length);
   const [open, setOpen] = useState<number | null>(null);
   const a = attrs(node, "ls-collage", ctx);
-  const lb = items.map((it) => { const m = mediaOf(ctx, it.media); return { src: m?.src ?? "", alt: t(it.alt, ctx.locale) || m?.alt }; });
+  const lb = items.map((it) => { const m = mediaOf(ctx, it.media); return { src: m?.src ?? "", alt: t(it.alt, ctx.locale) || m?.alt, width: m?.width, height: m?.height }; });
   return (
     <>
       <div {...a} data-layout={layout}>

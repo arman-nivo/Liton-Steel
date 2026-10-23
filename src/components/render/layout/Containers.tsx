@@ -1,6 +1,6 @@
 import type { Node } from "@/lib/schema/types";
-import { attrs, type RenderCtx } from "../context";
-import { MediaImage } from "../elements/media";
+import { attrs, mediaOf, type RenderCtx } from "../context";
+import { BG_QUALITY, MediaImage } from "../elements/media";
 import { RenderChildren } from "../RenderNode";
 
 export function Section({ node, ctx }: { node: Node; ctx: RenderCtx }) {
@@ -9,11 +9,12 @@ export function Section({ node, ctx }: { node: Node; ctx: RenderCtx }) {
   const tone = node.props.tone ?? "ink";
   const bg = node.props.bgMedia;
   const overlay = node.props.bgOverlay;
+  const m = bg ? mediaOf(ctx, bg) : undefined;
   return (
     <section {...a} data-full={full ? "true" : "false"} data-tone={tone} style={{ background: tone === "paper" ? "var(--paper)" : tone === "gold" ? "var(--gold)" : tone === "black" ? "var(--black)" : undefined, color: tone === "paper" || tone === "gold" ? "var(--ink)" : undefined }}>
       {bg ? (
-        <div className="ls-section-bg" aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, filter: node.props.bgFilter === "bw" ? "grayscale(1) contrast(1.08)" : undefined }}>
-          <MediaImage ctx={ctx} media={bg} alt="" sizes="100vw" />
+        <div className="ls-section-bg" aria-hidden="true" style={{ filter: node.props.bgFilter === "bw" ? "grayscale(1) contrast(1.08)" : undefined, ...(m ? { "--ar": `${m.width} / ${m.height}` } : {}) } as React.CSSProperties}>
+          <MediaImage ctx={ctx} media={bg} alt="" sizes="100vw" quality={BG_QUALITY} priority={!!node.computed?.bgPriority} />
           <div style={{ position: "absolute", inset: 0, background: `rgba(0,0,0,${overlay ?? 0.55})` }} />
         </div>
       ) : null}

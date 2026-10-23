@@ -3,7 +3,9 @@ import { Archivo_Black, League_Spartan, Jost, Montserrat, DM_Sans, Michroma, Hin
 // Only the fonts needed for first paint are preloaded; the rest are declared (available to the theme) but load on demand.
 export const archivo = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--font-archivo", display: "swap" });
 export const league = League_Spartan({ weight: ["700"], subsets: ["latin"], variable: "--font-league", display: "swap" });
-export const jost = Jost({ weight: ["400", "500", "600"], style: ["normal", "italic"], subsets: ["latin"], variable: "--font-jost", display: "swap" });
+// Upright only: the italic file (30 KB, preloaded on every page) served a few team names far down the page;
+// Jost's italic is a plain oblique, which the browser synthesises from the upright face.
+export const jost = Jost({ weight: ["400", "500", "600"], subsets: ["latin"], variable: "--font-jost", display: "swap" });
 export const montserrat = Montserrat({ weight: ["400", "600"], subsets: ["latin"], variable: "--font-montserrat", display: "swap", preload: false });
 export const dmSans = DM_Sans({ weight: ["500", "700"], subsets: ["latin"], variable: "--font-dm", display: "swap" });
 export const michroma = Michroma({ weight: "400", subsets: ["latin"], variable: "--font-michroma", display: "swap", preload: false });

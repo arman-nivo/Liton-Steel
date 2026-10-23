@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Node } from "@/lib/schema/types";
+import { isBackgroundImage } from "@/lib/schema/css";
 import { t } from "@/lib/utils";
 import { attrs, mediaOf, type RenderCtx } from "../context";
 import { Icon as LucideIcon } from "./icons";
+
+/** Background photos sit under a dark overlay, so a lower quality setting is invisible and saves bytes. */
+export const BG_QUALITY = 60;
 
 export function LogoMark({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
@@ -25,22 +29,39 @@ export function Logo({ node, ctx }: { node: Node; ctx: RenderCtx }) {
   return <div {...a}><LogoMark style={{ width: "100%", height: "auto" }} /></div>;
 }
 
-export function MediaImage({ ctx, media, alt, priority, sizes, className, fill = true }: { ctx: RenderCtx; media?: string; alt?: string; priority?: boolean; sizes?: string; className?: string; fill?: boolean }) {
+export function MediaImage({ ctx, media, alt, priority, sizes, className, fill = true, quality }: { ctx: RenderCtx; media?: string; alt?: string; priority?: boolean; sizes?: string; className?: string; fill?: boolean; quality?: number }) {
   const m = mediaOf(ctx, media);
   if (!m) return <div className={className} style={{ display: "grid", placeItems: "center", color: "var(--mute)", fontSize: 12, minHeight: 80 }}>No image</div>;
-  const common = { alt: alt ?? m.alt ?? "", priority, sizes: sizes ?? "(max-width: 767px) 100vw, (max-width: 1199px) 90vw, 640px", placeholder: (m.blur ? "blur" : "empty") as "blur" | "empty", blurDataURL: m.blur, className };
+  const text = alt ?? m.alt ?? "";
+  // Inline blur placeholders only for above-the-fold images: below the fold they would add ~1 KB of base64 to
+  // every page's HTML for a picture the visitor hasn't scrolled to; those frames show their dark backdrop instead.
+  const blur = priority && m.blur ? m.blur : undefined;
+  const common = { priority, quality, sizes: sizes ?? "(max-width: 767px) 100vw, (max-width: 1199px) 90vw, 640px", placeholder: (blur ? "blur" : "empty") as "blur" | "empty", blurDataURL: blur, className };
   const unopt = m.src.startsWith("data:") || m.src.startsWith("blob:");
-  if (fill) return <Image src={m.src} fill unoptimized={unopt} style={{ objectFit: "cover", objectPosition: m.focal ? `${m.focal[0] * 100}% ${m.focal[1] * 100}%` : undefined }} {...common} />;
-  return <Image src={m.src} width={m.width} height={m.height} unoptimized={unopt} {...common} />;
+  // fit/position come from the block's style (per breakpoint) via CSS variables, falling back to the media focal point
+  const pos = m.focal ? `${m.focal[0] * 100}% ${m.focal[1] * 100}%` : "50% 50%";
+  if (fill) return <Image src={m.src} alt={text} fill unoptimized={unopt} style={{ objectFit: "var(--ls-fit, cover)" as React.CSSProperties["objectFit"], objectPosition: `var(--ls-pos, ${pos})` }} {...common} />;
+  return <Image src={m.src} alt={text} width={m.width} height={m.height} unoptimized={unopt} {...common} />;
 }
 
+/** Shapes that need their designed proportions; every other frame may follow the photo on small screens. */
+const FIXED_SHAPES = new Set(["arch", "circle", "pill"]);
+
 export function ImageEl({ node, ctx }: { node: Node; ctx: RenderCtx }) {
-  const a = attrs(node, "ls-img", ctx);
+  const bg = isBackgroundImage(node);
+  const s = node.style ?? { base: {} };
+  const deviceOverride = !!(s.tablet?.aspectRatio || s.tablet?.height || s.mobile?.aspectRatio || s.mobile?.height);
+  // "natural": no frame set, so use the photo's own shape everywhere (a fill image would otherwise collapse to 0px).
+  // "fit": framed on desktop, but tablets and phones show the whole photo in its own proportions.
+  const ratio = bg ? undefined : !s.base.aspectRatio && !s.base.height ? "natural" : !deviceOverride && !FIXED_SHAPES.has(s.base.shape ?? "") ? "fit" : undefined;
+  const a = attrs(node, bg && !deviceOverride ? "ls-img ls-bg" : "ls-img", ctx);
+  const m = mediaOf(ctx, node.props.media ?? node.props.src);
   const alt = t(node.props.alt, ctx.locale) || undefined;
   const caption = t(node.props.caption, ctx.locale);
+  const style = { margin: 0, ...(m ? { "--ar": `${m.width} / ${m.height}` } : {}), ...(a.style ?? {}) } as React.CSSProperties;
   return (
-    <figure {...a} style={{ margin: 0, ...(a.style ?? {}) }}>
-      <MediaImage ctx={ctx} media={node.props.media ?? node.props.src} alt={alt} priority={!!node.props.priority} sizes={node.props.sizes} />
+    <figure {...a} data-ratio={ratio} style={style}>
+      <MediaImage ctx={ctx} media={node.props.media ?? node.props.src} alt={alt} priority={!!(node.props.priority ?? node.computed?.priority)} sizes={node.props.sizes ?? node.computed?.sizes ?? (bg ? "100vw" : undefined)} quality={bg ? BG_QUALITY : undefined} />
       {caption ? <figcaption>{caption}</figcaption> : null}
     </figure>
   );

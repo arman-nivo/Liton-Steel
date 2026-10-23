@@ -72,6 +72,7 @@ export function PageTransition() {
       const url = new URL(href, location.origin);
       if (url.pathname === location.pathname) return; // hash / same page
       e.preventDefault();
+      router.prefetch(href); // start loading the next page while the wipe plays (links don't prefetch in the viewport)
       if (reduce) { router.push(href); return; }
       wipe.dataset.covering = "1";
       withGsap((gsap) => gsap.fromTo(wipe, { clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" }, { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", duration: 0.5, ease: "power3.inOut", onComplete: () => router.push(href) }));

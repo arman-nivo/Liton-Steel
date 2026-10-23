@@ -48,6 +48,8 @@ export interface StyleProps {
   direction?: "row" | "column" | "row-reverse" | "column-reverse";
   wrap?: boolean;
   columns?: number;
+  /** raw grid-template-columns, computed by the engine (wins over `columns`) */
+  columnsTemplate?: string;
   gap?: number | string;
   rowGap?: number | string;
   padding?: Box;

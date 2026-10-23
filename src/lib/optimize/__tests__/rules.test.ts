@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { optimize } from "../index";
 import { fluidType } from "../rules/fluid-type";
-import { autoLayout, bestColumns, collageLayoutFor } from "../rules/layout";
+import { autoLayout, bestColumns, collageLayoutFor, personTracks } from "../rules/layout";
 import { rhythm } from "../rules/rhythm";
 import { images } from "../rules/images";
 import { contrast } from "../rules/contrast";
@@ -29,6 +29,14 @@ describe("fluid-type", () => {
     const r = optimize(siteWith([section([h])]), 1440, [fluidType]);
     expect(findByType(r.site.pages[0], "Heading")[0].auto?.size).toBeUndefined();
   });
+  it("caps headings with a long unbreakable word to the column width", () => {
+    const long = node("Heading", { text: { en: "ADMINISTRATIVE<br>PANEL" }, level: 2 }, { style: { size: "token:4xl" } });
+    const short = node("Heading", { text: { en: "OUR<br>GOALS" }, level: 2 }, { style: { size: "token:4xl" } });
+    const r = optimize(siteWith([section([long, short])]), 1440, [fluidType]);
+    const [l, s] = findByType(r.site.pages[0], "Heading");
+    expect(l.auto?.size).toMatch(/^min\(clamp\(.*\), calc\(\(100cqw - 48px\) \/ 10\.08\)\)$/);
+    expect(s.auto?.size).toMatch(/^clamp\(/);
+  });
 });
 
 describe("auto-layout", () => {
@@ -52,9 +60,27 @@ describe("auto-layout", () => {
     const grid = node("Grid", { autoColumns: true }, { style: { display: "grid" }, children: people });
     const empty = node("Stack", {}, { children: [] });
     const r = optimize(siteWith([section([grid, empty])]), 1440, [autoLayout]);
-    expect(findByType(r.site.pages[0], "Grid")[0].auto?.columns).toBe(3);
+    expect(findByType(r.site.pages[0], "Grid")[0].auto?.columnsTemplate).toBe(personTracks(3, "0px"));
     expect(findByType(r.site.pages[0], "Stack")[0].auto?.display).toBe("none");
     expect(r.warnings.some((w) => w.message.includes("Empty Stack"))).toBe(true);
+  });
+  it("gives a lone person card the same size as the cards in another row of the section", () => {
+    const card = (i: number) => node("PersonCard", { name: { en: `P${i}` }, role: { en: "r" }, media: "riana-ferdoush" });
+    const pair = node("Grid", { autoColumns: true }, { style: { display: "grid", gap: 5 }, children: [card(1), card(2)] });
+    const lone = node("Grid", { autoColumns: true }, { style: { display: "grid", gap: 5 }, children: [card(3)] });
+    const r = optimize(siteWith([section([pair, node("Text", { text: { en: "bio" } }), lone])]), 1440, [autoLayout]);
+    const [a, b] = findByType(r.site.pages[0], "Grid");
+    expect(a.auto?.columnsTemplate).toBe(personTracks(2, "calc(var(--space) * 5)"));
+    expect(b.auto?.columnsTemplate).toBe(a.auto?.columnsTemplate);
+    expect(b.auto?.justifyContent).toBe("center");
+    expect(b.auto?.columns).toBeUndefined();
+  });
+  it("keeps stat grids on plain columns", () => {
+    const stats = Array.from({ length: 3 }, (_, i) => node("Stat", { value: i, label: { en: "x" } }));
+    const r = optimize(siteWith([section([node("Grid", {}, { style: { display: "grid" }, children: stats })])]), 1440, [autoLayout]);
+    const g = findByType(r.site.pages[0], "Grid")[0];
+    expect(g.auto?.columns).toBe(3);
+    expect(g.auto?.columnsTemplate).toBeUndefined();
   });
 });
 
@@ -80,6 +106,24 @@ describe("images", () => {
   it("warns for missing media", () => {
     const r = optimize(siteWith([section([node("Image", { media: "does-not-exist" })])]), 1440, [images]);
     expect(r.warnings.some((w) => w.message.includes("missing from the media library"))).toBe(true);
+  });
+  it("only preloads an image in the first section", () => {
+    const later = node("Image", { media: "resort-pool" });
+    const r = optimize(siteWith([section([node("Text", { text: { en: "intro" } })]), section([later])]), 1440, [images]);
+    expect(findByType(r.site.pages[0], "Image")[0].computed?.priority).toBeUndefined();
+  });
+  it("treats a full-bleed absolute image as a 100vw background", () => {
+    const bg = node("Image", { media: "resort-pool" }, { style: { position: "absolute", top: "0", left: "0", width: "100%", height: "100%" } });
+    const r = optimize(siteWith([section([bg])]), 1440, [images]);
+    const i = findByType(r.site.pages[0], "Image")[0];
+    expect(i.computed?.sizes).toBe("100vw");
+    expect(i.computed?.priority).toBe(true);
+  });
+  it("preloads a section background photo only in the first section", () => {
+    const r = optimize(siteWith([section([], { bgMedia: "resort-pool" }), section([], { bgMedia: "resort-pool" })]), 1440, [images]);
+    const [first, second] = findByType(r.site.pages[0], "Section");
+    expect(first.computed?.bgPriority).toBe(true);
+    expect(second.computed?.bgPriority).toBeUndefined();
   });
 });
 

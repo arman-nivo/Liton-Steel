@@ -199,13 +199,12 @@ export const ADMIN = {
   people: [
     { name: { en: "Abu Hassan Liton", bn: "আবু হাসান লিটন" }, role: { en: "CEO & Founder", bn: "সিইও ও প্রতিষ্ঠাতা" }, media: "ceo-abu-hassan-liton" },
     { name: { en: "Abu Miraj Rudro", bn: "আবু মিরাজ রুদ্র" }, role: { en: "Managing Director", bn: "ব্যবস্থাপনা পরিচালক" }, media: "md-abu-miraj-rudro" },
-    { name: { en: "Md Shakeel Ahmed Jalal", bn: "মো. শাকিল আহমেদ জালাল" }, role: { en: "Advisor & Shareholder", bn: "উপদেষ্টা ও শেয়ারহোল্ডার" }, media: "advisor-shakeel-ahmed-jalal" },
     // Role intentionally blank: set it in the editor (Administrative Panel → this card → Content → Role).
     { name: { en: "Ataur Rahaman Methu", bn: "আতাউর রহমান মিঠু" }, role: { en: "", bn: "" }, media: "advisor-ataur-rahaman-methu" },
   ],
   text1: {
-    en: "<strong>Abu Hassan Liton</strong> is the honourable CEO of Liton Steel. He founded the company 35 years ago. His son <strong>Abu Miraj Rudro</strong> is the Managing Director, supporting his father with sound policies and forward-looking strategy. <strong>Md Shakeel Ahmed Jalal</strong> is not only Mr Liton's trusted companion but also his advisor and a shareholder of the company — in every situation he stands beside Liton Steel.",
-    bn: "<strong>আবু হাসান লিটন</strong> লিটন স্টিলের সম্মানিত সিইও। ৩৫ বছর আগে তিনি এই প্রতিষ্ঠান গড়ে তোলেন। তাঁর ছেলে <strong>আবু মিরাজ রুদ্র</strong> প্রতিষ্ঠানের ব্যবস্থাপনা পরিচালক—অসাধারণ নীতি ও অত্যাধুনিক কৌশল প্রণয়নে তিনি বাবাকে সহায়তা করেন। <strong>মো. শাকিল আহমেদ জালাল</strong> শুধু মি. লিটনের বিশ্বস্ত সহযোগীই নন, প্রতিষ্ঠানের উপদেষ্টা ও শেয়ারহোল্ডারও। যেকোনো পরিস্থিতিতে তিনি লিটন স্টিলের পাশে থাকেন।",
+    en: "<strong>Abu Hassan Liton</strong> is the honourable CEO of Liton Steel. He founded the company 35 years ago. His son <strong>Abu Miraj Rudro</strong> is the Managing Director, supporting his father with sound policies and forward-looking strategy.",
+    bn: "<strong>আবু হাসান লিটন</strong> লিটন স্টিলের সম্মানিত সিইও। ৩৫ বছর আগে তিনি এই প্রতিষ্ঠান গড়ে তোলেন। তাঁর ছেলে <strong>আবু মিরাজ রুদ্র</strong> প্রতিষ্ঠানের ব্যবস্থাপনা পরিচালক—অসাধারণ নীতি ও অত্যাধুনিক কৌশল প্রণয়নে তিনি বাবাকে সহায়তা করেন।",
   },
 };
 

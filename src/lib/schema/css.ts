@@ -89,6 +89,7 @@ export function styleToDecls(s: StyleProps | undefined, media?: Map<string, Medi
   put("flex-direction", s.direction);
   if (s.wrap !== undefined) put("flex-wrap", s.wrap ? "wrap" : "nowrap");
   if (s.columns) put("grid-template-columns", `repeat(${s.columns}, minmax(0, 1fr))`);
+  put("grid-template-columns", s.columnsTemplate);
   put("gap", resolveSpace(s.gap));
   put("row-gap", resolveSpace(s.rowGap));
   put("padding", resolveBox(s.padding));
@@ -107,8 +108,11 @@ export function styleToDecls(s: StyleProps | undefined, media?: Map<string, Medi
   put("top", s.top); put("right", s.right); put("bottom", s.bottom); put("left", s.left);
   put("z-index", s.zIndex);
   put("aspect-ratio", s.aspectRatio);
+  // images render inside a <figure>, so fit/position are also passed down as variables the <img> reads
   put("object-fit", s.objectFit);
+  put("--ls-fit", s.objectFit);
   put("object-position", s.objectPosition);
+  put("--ls-pos", s.objectPosition);
   put("overflow", s.overflow);
   put("order", s.order);
   put("flex", s.flex);
@@ -130,18 +134,64 @@ function visibilityRules(node: Node, sel: string): string {
   return out;
 }
 
-export function nodeCss(node: Node, media?: Map<string, MediaItem>): string {
+/** An absolutely positioned image that covers its parent — it acts as the section's background photo. */
+export function isBackgroundImage(node: Node): boolean {
+  const s = node.style?.base;
+  return node.type === "Image" && s?.position === "absolute" && (s.width === "100%" || s.width === "100vw") && (s.height === "100%" || s.height === "100vh" || s.height === "100svh");
+}
+
+/** On tablet/phone a CSS background photo is shown at full width instead of `cover`, so the whole picture stays visible. */
+function bgFitDecls(node: Node): string {
+  const b = node.style?.base;
+  if (!b?.bgMedia || (b.bgSize && b.bgSize !== "cover")) return "";
+  const t = node.style?.tablet, m = node.style?.mobile;
+  if (t?.bgSize || t?.bgPosition || m?.bgSize || m?.bgPosition) return "";
+  // layer order matches styleToDecls: overlay gradient first, then the photo
+  return b.bgOverlay
+    ? "background-size:100% 100%,100% auto;background-position:0 0,50% 0;background-repeat:no-repeat;"
+    : "background-size:100% auto;background-position:50% 0;background-repeat:no-repeat;";
+}
+
+interface CssParts { base: string[]; tablet: string[]; mobile: string[]; extra: string[] }
+
+function collect(node: Node, parts: CssParts, media?: Map<string, MediaItem>) {
   const sel = `.${cls(node.id)}`;
-  let out = "";
   const auto = styleToDecls(node.auto, media);
   const base = styleToDecls(node.style?.base, media);
-  if (auto || base) out += `${sel}{${base}${auto}}`;
-  const tab = styleToDecls(node.style?.tablet, media);
-  if (tab) out += `@container page (max-width:${TABLET_MAX}px){${sel}{${tab}}}`;
+  if (auto || base) parts.base.push(`${sel}{${base}${auto}}`);
+  const tab = bgFitDecls(node) + styleToDecls(node.style?.tablet, media);
+  if (tab) parts.tablet.push(`${sel}{${tab}}`);
   const mob = styleToDecls(node.style?.mobile, media);
-  if (mob) out += `@container page (max-width:${MOBILE_MAX}px){${sel}{${mob}}}`;
-  out += visibilityRules(node, sel);
+  if (mob) parts.mobile.push(`${sel}{${mob}}`);
+  const vis = visibilityRules(node, sel);
+  if (vis) parts.extra.push(vis);
+}
+
+/** Joins rules that share the exact same declarations into one selector list (`.n_a,.n_b{…}`). */
+function merge(rules: string[]): string {
+  const bySig = new Map<string, string[]>();
+  for (const r of rules) {
+    const i = r.indexOf("{");
+    const sel = r.slice(0, i), body = r.slice(i);
+    const list = bySig.get(body);
+    if (list) list.push(sel); else bySig.set(body, [sel]);
+  }
+  let out = "";
+  bySig.forEach((sels, body) => { out += sels.join(",") + body; });
   return out;
+}
+
+function assemble(parts: CssParts): string {
+  let out = merge(parts.base);
+  if (parts.tablet.length) out += `@container page (max-width:${TABLET_MAX}px){${merge(parts.tablet)}}`;
+  if (parts.mobile.length) out += `@container page (max-width:${MOBILE_MAX}px){${merge(parts.mobile)}}`;
+  return out + parts.extra.join("");
+}
+
+export function nodeCss(node: Node, media?: Map<string, MediaItem>): string {
+  const parts: CssParts = { base: [], tablet: [], mobile: [], extra: [] };
+  collect(node, parts, media);
+  return assemble(parts);
 }
 
 export function walk(node: Node, fn: (n: Node, parent?: Node, index?: number) => void, parent?: Node, index?: number) {
@@ -149,8 +199,12 @@ export function walk(node: Node, fn: (n: Node, parent?: Node, index?: number) =>
   node.children?.forEach((c, i) => walk(c, fn, node, i));
 }
 
+/**
+ * Every rule targets a single node class, so rules can be grouped freely: one container query per breakpoint
+ * and identical declaration blocks merged. Base → tablet → phone order is kept, so the cascade is unchanged.
+ */
 export function buildPageCss(page: Page, _theme: Theme, media?: Map<string, MediaItem>): string {
-  let css = "";
-  walk(page, (n) => { css += nodeCss(n, media); });
-  return css;
+  const parts: CssParts = { base: [], tablet: [], mobile: [], extra: [] };
+  walk(page, (n) => collect(n, parts, media));
+  return assemble(parts);
 }

@@ -2,15 +2,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useEditor } from "@/lib/store/editor";
 import { RenderPage } from "../render/RenderNode";
+import type { EditorUI } from "../render/context";
+import { EditableText } from "../render/elements/EditableText";
 import { ctxFor } from "../site/PublicPage";
 import { ThemeStyle } from "../site/ThemeStyle";
 import { findNode, findParent } from "@/lib/utils";
 import type { Node } from "@/lib/schema/types";
 import { C, IconBtn } from "./ui";
+import { InsertionPoint } from "./InsertionPoint";
 import { ArrowDown, ArrowUp, Copy, Trash2, ChevronUp } from "lucide-react";
 import { applyPreset } from "@/lib/motion/presets";
 
 const WIDTHS = { desktop: 1440, tablet: 768, mobile: 390 } as const;
+const EDITOR_UI: EditorUI = { InsertionPoint, EditableText };
 
 export function Canvas() {
   const site = useEditor((s) => s.site);
@@ -28,7 +32,7 @@ export function Canvas() {
   const [menu, setMenu] = useState<{ x: number; y: number; id: string } | null>(null);
 
   const page = useMemo(() => site?.pages.find((p) => p.id === pageId) ?? site?.pages[0], [site, pageId]);
-  const ctx = useMemo(() => (site ? ctxFor(site, locale, true) : null), [site, locale]);
+  const ctx = useMemo(() => (site ? ctxFor(site, locale, true, EDITOR_UI) : null), [site, locale]);
 
   const onClick = useCallback((e: React.MouseEvent) => {
     const t = e.target as HTMLElement;

@@ -113,7 +113,9 @@ export function applyPreset(el: HTMLElement, level: MotionLevel): void {
       const holder = el.closest("section") ?? el;
       gsap.set(el, { autoAlpha: 1 });
       if (subtle) { gsap.set(el, { filter: "grayscale(1)" }); return; }
-      gsap.fromTo(el, { scale: 1.15, filter: "grayscale(0) contrast(1)" }, { scale: 1, filter: "grayscale(1) contrast(1.08)", ease: "none", scrollTrigger: { trigger: holder, start: "top top", end: "bottom top", scrub: 0.8 } });
+      // on tablets/phones a background photo is shown whole (see .ls-bg in globals.css); zooming it would crop it again
+      const whole = el.classList.contains("ls-bg") && window.innerWidth < 1200;
+      gsap.fromTo(el, { scale: whole ? 1 : 1.15, filter: "grayscale(0) contrast(1)" }, { scale: 1, filter: "grayscale(1) contrast(1.08)", ease: "none", scrollTrigger: { trigger: holder, start: "top top", end: "bottom top", scrub: 0.8 } });
       return;
     }
     case "magnetic-hover": {

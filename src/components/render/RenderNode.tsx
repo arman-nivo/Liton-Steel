@@ -14,7 +14,6 @@ import { ProjectGallery } from "./elements/ProjectGallery";
 import { Stat } from "./elements/Stat";
 import { ContactForm } from "./elements/ContactForm";
 import { MapEmbed } from "./elements/MapEmbed";
-import { InsertionPoint } from "../editor/InsertionPoint";
 
 type C = React.ComponentType<{ node: Node; ctx: RenderCtx }>;
 /** Client blocks only need the media they reference (and projects for galleries) — keeps the RSC payload small. */
@@ -28,7 +27,8 @@ function slimCtx(node: Node, ctx: RenderCtx): RenderCtx {
   const projects = node.type === "ProjectGallery" ? ctx.projects : [];
   if (node.type === "ProjectGallery") projects.forEach((p) => p.images.slice(0, 2).forEach((m) => ids.add(m)));
   const media = new Map<string, MediaItem>();
-  ids.forEach((id) => { const m = ctx.media.get(id); if (m) media.set(id, m); });
+  // only what rendering needs: no blur placeholders, tags or upload metadata in the payload
+  ids.forEach((id) => { const m = ctx.media.get(id); if (m) media.set(id, { id: m.id, src: m.src, width: m.width, height: m.height, alt: m.alt, focal: m.focal }); });
   return { locale: ctx.locale, editable: ctx.editable, media, projects, site: undefined as unknown as RenderCtx["site"], animIndex: ctx.animIndex };
 }
 const REGISTRY: Partial<Record<Node["type"], C>> = {
@@ -46,16 +46,17 @@ export function RenderNode({ node, ctx }: { node: Node; ctx: RenderCtx }) {
 
 export function RenderChildren({ node, ctx, insert }: { node: Node; ctx: RenderCtx; insert?: "section" | "element" }) {
   const kids = node.children ?? [];
-  if (!ctx.editable || !insert) return <>{kids.map((c) => <RenderNode key={c.id} node={c} ctx={ctx} />)}</>;
+  const Insert = ctx.editable && insert ? ctx.ui?.InsertionPoint : undefined;
+  if (!Insert || !insert) return <>{kids.map((c) => <RenderNode key={c.id} node={c} ctx={ctx} />)}</>;
   return (
     <>
       {kids.map((c, i) => (
         <Fragment key={c.id}>
-          {i === 0 || kids[i - 1].style.base.position === "absolute" ? null : <InsertionPoint parentId={node.id} index={i} kind={insert} />}
+          {i === 0 || kids[i - 1].style.base.position === "absolute" ? null : <Insert parentId={node.id} index={i} kind={insert} />}
           <RenderNode node={c} ctx={ctx} />
         </Fragment>
       ))}
-      <InsertionPoint parentId={node.id} index={kids.length} kind={insert} />
+      <Insert parentId={node.id} index={kids.length} kind={insert} />
     </>
   );
 }
