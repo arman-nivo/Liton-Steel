@@ -83,7 +83,9 @@ export function contrastWithBrightness(hex: string, brightness: number): number 
   const rgb = hexToRgb(hex);
   if (!rgb) return null;
   const l = luminance(rgb);
-  const lb = brightness; // brightness ≈ mean luma 0..1
+  // brightness is the mean of gamma-encoded channels (0..1); contrast needs linear luminance, so convert it like a grey pixel
+  const g = Math.min(1, Math.max(0, brightness)) * 255;
+  const lb = luminance([g, g, g]);
   const [hi, lo] = l > lb ? [l, lb] : [lb, l];
   return (hi + 0.05) / (lo + 0.05);
 }

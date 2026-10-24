@@ -37,5 +37,6 @@ export const UI: Record<string, { en: string; bn: string }> = {
   projectsTitle: { en: "Our Projects", bn: "আমাদের প্রকল্প" },
   gallery: { en: "Gallery", bn: "গ্যালারি" },
   rights: { en: "All rights reserved.", bn: "সর্বস্বত্ব সংরক্ষিত।" },
+  developedBy: { en: "Developed by", bn: "ডেভেলপ করেছে:" },
 };
 export const ui = (k: keyof typeof UI, locale: Locale) => UI[k]?.[locale] ?? UI[k]?.en ?? String(k);

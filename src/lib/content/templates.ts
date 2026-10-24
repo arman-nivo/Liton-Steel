@@ -67,8 +67,8 @@ const section = (preset: string, anchor: string, children: Node[], props: Record
 // ---- page templates ----
 export function coverTemplate(): Node {
   return section("cover", "top", [
-    node("Image", { media: "factory-aerial-helipad", priority: true, alt: { en: "Aerial view of the Liton Steel factory complex with its helipad and gardens", bn: "হেলিপ্যাড ও বাগানসহ লিটন স্টিল কারখানা কমপ্লেক্সের আকাশ থেকে তোলা দৃশ্য" } },
-      { name: "Hero photo", style: { position: "absolute", top: "0", left: "0", width: "100%", height: "100%", opacity: 0.7, zIndex: 0, objectFit: "cover" }, animation: A.hero() }),
+    node("Image", { media: "factory-aerial-court-hero", priority: true, alt: { en: "Aerial view of the Liton Steel factory complex with its helipad, sports court and gardens", bn: "হেলিপ্যাড, খেলার কোর্ট ও বাগানসহ লিটন স্টিল কারখানা কমপ্লেক্সের আকাশ থেকে তোলা দৃশ্য" } },
+      { name: "Hero photo", style: { position: "absolute", top: "0", left: "0", width: "100%", height: "100%", opacity: 1, zIndex: 0, objectFit: "cover" }, animation: A.hero() }),
     node("DecorShard", { corner: "tr", tone: "paper" }, { name: "Shard tr", animation: A.shard(), style: { width: "min(38%, 420px)", height: "min(40%, 380px)" } }),
     shard("br", "gold"),
     tab("logo"),
@@ -141,7 +141,7 @@ export function leaderTemplate(kind: "ceo" | "md"): Node {
     container([
       grid2([
         stack([heading(c.heading), para(c.p1), para(c.p2, {}, 0.2)]),
-        node("PersonCard", { name: c.name, role: c.role, media, labelStyle: "overlap" }, { name: "Portrait", style: { maxWidth: "380px", width: "100%", justifySelf: "center" }, tablet: { justifySelf: "start" }, animation: A.clip() }),
+        node("PersonCard", { name: c.name, role: c.role, media, labelStyle: "overlap", ...(kind === "ceo" ? {} : { frame: "photo" }) }, { name: "Portrait", style: { maxWidth: "380px", width: "100%", justifySelf: "center" }, tablet: { justifySelf: "start" }, animation: A.clip() }),
       ], { columns: 2 }),
     ]),
   ]);

@@ -60,17 +60,17 @@
  },
  {
   "id": "md-abu-miraj-rudro",
-  "src": "/media/md-abu-miraj-rudro.jpg",
-  "width": 357,
-  "height": 470,
+  "src": "/media/md-abu-miraj-rudro-2026.jpg",
+  "width": 1122,
+  "height": 1402,
   "alt": "Portrait of Abu Miraj Rudro, Managing Director",
-  "blur": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAYABIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDlliS3jUMAVH3h0zWnqPkTGMp8zMDg4Ayv4DmqMoDsAe+aaIgpye3SsrXRvCm+T1KzaY244bAzxRW6EJAO2is/as5eYrvaCOCC43kl2dSMfdwf/r0q27TFY0xucgDNFFWn7p6FPWKNEW7IArdV4ODRRRXJc817n//Z",
-  "brightness": 0.262,
+  "blur": "data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAYABMDASIAAhEBAxEB/8QAGQABAAIDAAAAAAAAAAAAAAAAAAIDAQUG/8QAIBAAAgIBBAMBAAAAAAAAAAAAAQIABAMREiExBUFhMv/EABYBAQEBAAAAAAAAAAAAAAAAAAACAf/EABcRAQEBAQAAAAAAAAAAAAAAAAABERL/2gAMAwEAAhEDEQA/AObq12sOMePTc3GrdD6fkrtVstV0GRlcP0VPUv8AGWTVt4cgI/QBB9g8aSflbpew+FsYUqx3HaAR6A4mW3cXJOdasjmIJ5iUhIEELz9mCQo1iIFZ7MRED//Z",
+  "brightness": 0.183,
   "tags": [
    "people"
   ],
   "folder": "people",
-  "bytes": 35683
+  "bytes": 95767
  },
  {
   "id": "salma-hasan",
@@ -383,6 +383,21 @@
   ],
   "folder": "project",
   "bytes": 63075
+ },
+ {
+  "id": "factory-aerial-court-hero",
+  "src": "/media/factory-aerial-court-hero.jpg",
+  "width": 2560,
+  "height": 1443,
+  "alt": "Aerial view of the Liton Steel factory complex with its helipad, sports court and gardens",
+  "blur": "data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAOABgDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQAD/8QAIhAAAgICAQMFAAAAAAAAAAAAAQIAAwQRBTFhoRIUIUGB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgAB/8QAFxEBAQEBAAAAAAAAAAAAAAAAAAEREv/aAAwDAQACEQMRAD8APHN5vUekDus0q5nILFb7wp6AKmz5g5utPyXO5sjhX3YobY+xuHpYW97lupNeWv7XqUIVylytWzBidDZ8HtKKXWP/2Q==",
+  "brightness": 0.336,
+  "tags": [
+   "hero",
+   "factory"
+  ],
+  "folder": "project",
+  "bytes": 230269
  },
  {
   "id": "carport-shed",

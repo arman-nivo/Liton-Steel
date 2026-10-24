@@ -150,7 +150,7 @@ export interface NumberListItem { id: string; label: L10n; href: string }
 export interface NumberListProps { items: NumberListItem[]; startAt?: number }
 export interface ProcessStep { id: string; title: L10n; text?: L10n }
 export interface ProcessStepsProps { items: ProcessStep[]; media: string[] }
-export interface PersonCardProps { name: L10n; role: L10n; media?: string; bio?: L10n; labelStyle?: "overlap" | "below" }
+export interface PersonCardProps { name: L10n; role: L10n; media?: string; bio?: L10n; labelStyle?: "overlap" | "below"; frame?: "arch" | "photo" }
 export interface TeamMember { id: string; name: L10n }
 export interface TeamGroup { id: string; role: L10n; members: TeamMember[] }
 export interface TeamListProps { groups: TeamGroup[]; accordionOnMobile?: boolean }

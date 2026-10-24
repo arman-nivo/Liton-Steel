@@ -1,6 +1,6 @@
 import type { Node } from "@/lib/schema/types";
 import { t } from "@/lib/utils";
-import { attrs, type RenderCtx } from "../context";
+import { attrs, mediaOf, type RenderCtx } from "../context";
 import { MediaImage } from "./media";
 import { Icon } from "./icons";
 
@@ -9,10 +9,13 @@ export function PersonCard({ node, ctx }: { node: Node; ctx: RenderCtx }) {
   const name = t(node.props.name, ctx.locale);
   const role = t(node.props.role, ctx.locale);
   const labelStyle = node.props.labelStyle ?? "overlap";
+  // "photo" shows the portrait whole, in its own proportions; the default arch crops it to the 3:4 arch shape
+  const photo = node.props.frame === "photo";
+  const m = photo ? mediaOf(ctx, node.props.media) : undefined;
   return (
-    <div {...a} data-label={labelStyle}>
+    <div {...a} data-label={labelStyle} data-frame={photo ? "photo" : undefined}>
       {labelStyle === "below" ? <div className="name" style={{ fontSize: "var(--text-md)" }}>{name}</div> : null}
-      <div className="frame"><MediaImage ctx={ctx} media={node.props.media} alt={name} sizes="(max-width: 767px) 90vw, 420px" /></div>
+      <div className="frame" style={m ? ({ "--ar": `${m.width} / ${m.height}` } as React.CSSProperties) : undefined}><MediaImage ctx={ctx} media={node.props.media} alt={name} sizes="(max-width: 767px) 90vw, 420px" /></div>
       {labelStyle === "overlap" ? <div className="tag" style={{ fontSize: "var(--text-md)" }}>{name}</div> : null}
       {role ? <div className="role">{role}</div> : null}
       {node.props.bio ? <p className="ls-text" style={{ fontSize: "var(--text-sm)", opacity: 0.8, textAlign: "center" }}>{t(node.props.bio, ctx.locale)}</p> : null}

@@ -65,6 +65,7 @@ export function ContentTab({ node }: { node: Node }) {
       <L10nField label="Name" value={p.name} onChange={(v) => set({ name: v })} />
       <L10nField label="Role" value={p.role} onChange={(v) => set({ role: v })} />
       <MediaField label="Portrait" value={p.media} onChange={(id) => set({ media: id })} />
+      <Field label="Photo frame"><Select value={p.frame ?? "arch"} onChange={(e) => set({ frame: e.target.value })} options={[{ value: "arch", label: "Arch (crops the photo)" }, { value: "photo", label: "Full photo (no crop)" }]} /></Field>
       <Field label="Label style"><Select value={p.labelStyle ?? "overlap"} onChange={(e) => set({ labelStyle: e.target.value })} options={[{ value: "overlap", label: "Gold tag overlapping photo" }, { value: "below", label: "Name above, role below" }]} /></Field>
       <L10nField label="Short bio" value={p.bio} onChange={(v) => set({ bio: v })} multiline />
     </>;

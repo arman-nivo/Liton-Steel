@@ -33,6 +33,9 @@
   --font-label: var(--font-dm), system-ui, sans-serif;
   --font-digit: var(--font-michroma), monospace;
   --font-bangla: var(--font-hind), "Noto Sans Bengali", sans-serif;
+  /* each Bangla font is loaded as a Bengali half and a Latin half (src/lib/fonts.ts); this joins them into one family */
+  --font-hind: var(--font-hind-bn), var(--font-hind-latin);
+  --font-noto: var(--font-noto-bn), var(--font-noto-latin);
   --text-xs: 12px; --text-sm: 14px; --text-base: 16px; --text-md: 20px; --text-lg: 25px;
   --text-xl: 31px; --text-2xl: 39px; --text-3xl: 49px; --text-4xl: 61px; --text-display: 76px;
 }
@@ -108,17 +111,38 @@ a { color: inherit; }
   .ls-section[data-full="true"] { min-height: 0; }
 }
 
-/* Background photos (section photo or a full-bleed image block). Desktop keeps `cover`. On tablets and
-   phones a portrait-shaped section would crop a landscape photo down to a sliver, so the photo is shown
-   whole at full width (its own aspect ratio, from --ar) and fades into the section colour below it.
-   If the section is shorter than the photo, max-height brings back a centred cover crop. */
+/* Background photos are shown whole: full width in their own proportions (--ar), fading into the section
+   colour below. If the section is shorter than the photo, max-height brings back a centred cover crop.
+   A full-bleed image block (the hero photo) does this at every width — on a 16:10 desktop it fills all but a
+   short fade at the bottom. A section photo keeps `cover` on desktop and goes whole on tablets/phones,
+   where a portrait-shaped section would otherwise crop a landscape photo down to a sliver. */
+.ls-img.ls-bg {
+  inset: 0 0 auto 0; height: auto; aspect-ratio: var(--ar, 16 / 9); max-height: 100%; --ls-pos: 50% 50%;
+  -webkit-mask-image: linear-gradient(#000 86%, transparent);
+  mask-image: linear-gradient(#000 86%, transparent);
+}
 @container page (max-width: 1199px) {
   .ls-img.ls-bg, .ls-section-bg {
     inset: 0 0 auto 0; height: auto; aspect-ratio: var(--ar, 16 / 9); max-height: 100%;
     -webkit-mask-image: linear-gradient(#000 64%, transparent);
     mask-image: linear-gradient(#000 64%, transparent);
   }
-  .ls-img.ls-bg { --ls-pos: 50% 50%; }
+}
+
+/* Readability shade over a full-bleed photo, instead of darkening the whole picture: dark behind the text
+   column, and in the first section also behind the transparent header (light sky, white corner shard). It sits
+   above the photo and shards (z-index 0, later in the DOM) and below the content (z-index 1). */
+.ls-section-scrim { position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(10,10,9,.52) 0%, rgba(10,10,9,.24) 42%, rgba(10,10,9,0) 70%); }
+.ls-page > section:first-of-type .ls-section-scrim {
+  background:
+    linear-gradient(180deg, rgba(10,10,9,.62) 0, rgba(10,10,9,.3) 110px, rgba(10,10,9,0) 240px),
+    linear-gradient(90deg, rgba(10,10,9,.52) 0%, rgba(10,10,9,.24) 42%, rgba(10,10,9,0) 70%);
+}
+/* tablet/phone: the text sits under the photo (see .ls-bg), so only the header needs help */
+@container page (max-width: 1199px) {
+  .ls-section-scrim { background: none; }
+  .ls-page > section:first-of-type .ls-section-scrim { background: linear-gradient(180deg, rgba(10,10,9,.6) 0, rgba(10,10,9,.25) 90px, rgba(10,10,9,0) 200px); }
 }
 
 /* Decorative shards (white/gold wedges) */
@@ -181,6 +205,8 @@ a { color: inherit; }
 .ls-person { display: grid; gap: 14px; justify-items: center; }
 .ls-person .frame { position: relative; width: 100%; aspect-ratio: 3 / 4; border-radius: 999px 999px 0 0; overflow: hidden; background: #1a1a18; }
 .ls-person .frame img { width: 100%; height: 100%; object-fit: cover; }
+/* "Full photo" frame: the portrait's own proportions (--ar from the media size), so nothing is cropped */
+.ls-person[data-frame="photo"] .frame { aspect-ratio: var(--ar, 4 / 5); border-radius: 0; }
 .ls-person .tag { background: var(--gold); color: var(--ink); font-family: var(--font-label); font-weight: 700; padding: 0.55em 1.1em; border-radius: 6px; text-align: center; line-height: 1.15; }
 .ls-person[data-label="overlap"] .tag { margin-top: -22px; position: relative; z-index: 1; width: 90%; }
 .ls-person .role { font-size: var(--text-xs); color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--font-label); text-align: center; }
@@ -350,6 +376,10 @@ a { color: inherit; }
 .ls-footer a:hover { color: var(--gold); opacity: 1; }
 .ls-footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: var(--text-sm); }
 .ls-footer .bottom { max-width: var(--container); margin: 40px auto 0; padding: 20px clamp(16px, 4vw, 40px) 0; border-top: 1px solid color-mix(in srgb, var(--paper) 10%, transparent); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; font-size: 12px; opacity: .7; position: relative; z-index: 1; }
+/* copyright + builder credit: one line on wide screens, the credit wraps as a whole on phones */
+.ls-footer .bottom .legal { display: flex; flex-wrap: wrap; column-gap: 14px; row-gap: 4px; }
+.ls-footer .bottom .credit { white-space: nowrap; }
+.ls-footer .bottom .credit b { color: var(--gold); font-weight: 600; }
 
 /* WhatsApp + cookie */
 .ls-wa { position: fixed; right: 20px; bottom: 20px; z-index: 55; width: 56px; height: 56px; border-radius: 50%; background: #25d366; color: #fff; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.4); text-decoration: none; }

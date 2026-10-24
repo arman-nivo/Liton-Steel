@@ -15,6 +15,7 @@ export const contrast: Rule = {
   id: "contrast",
   run(ctx) {
     const theme = ctx.site.theme;
+    const needOverlay = new Set<string>();
     eachNode(ctx.page, (n, parents) => {
       if (!isText(n)) return;
       const large = n.type === "Heading" || n.type === "Quote" || n.type === "Stat";
@@ -40,6 +41,7 @@ export const contrast: Rule = {
       if (brightness !== null && bgNode) {
         // auto-apply a dark overlay so text stays readable over the photo
         const overlay = "linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.65))";
+        needOverlay.add(bgNode.id);
         if (bgNode.computed?.overlay !== overlay) {
           bgNode.computed = { ...(bgNode.computed ?? {}), overlay };
           ctx.adjust({ rule: "contrast", nodeId: bgNode.id, message: "Dark gradient overlay applied so text over the photo meets AA contrast." });
@@ -48,6 +50,12 @@ export const contrast: Rule = {
       }
       const alt = contrastRatio(theme.colors.gold, bgHex ?? theme.colors.ink)! >= need ? "token:gold" : "token:paper";
       ctx.warn({ level: "warn", rule: "contrast", nodeId: n.id, message: `Text contrast ${ratio.toFixed(1)}:1 is below ${need}:1 (WCAG AA).`, fix: { label: `Use ${alt.slice(6)}`, patch: { color: alt } } });
+    });
+    // the overlay is saved with the page, so take it off again once the text reads fine without it
+    eachNode(ctx.page, (n) => {
+      if (!n.computed?.overlay || needOverlay.has(n.id)) return;
+      delete n.computed.overlay;
+      ctx.adjust({ rule: "contrast", nodeId: n.id, message: "Dark overlay removed: text over the photo is readable without it." });
     });
   },
 };

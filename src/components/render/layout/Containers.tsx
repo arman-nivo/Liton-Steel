@@ -1,4 +1,5 @@
 import type { Node } from "@/lib/schema/types";
+import { isBackgroundImage } from "@/lib/schema/css";
 import { attrs, mediaOf, type RenderCtx } from "../context";
 import { BG_QUALITY, MediaImage } from "../elements/media";
 import { RenderChildren } from "../RenderNode";
@@ -19,6 +20,7 @@ export function Section({ node, ctx }: { node: Node; ctx: RenderCtx }) {
         </div>
       ) : null}
       <RenderChildren node={node} ctx={ctx} insert="element" />
+      {node.children?.some(isBackgroundImage) ? <div className="ls-section-scrim" aria-hidden="true" /> : null}
       {node.computed?.overlay ? <div className="ls-section-overlay" aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 0, background: String(node.computed.overlay), pointerEvents: "none" }} /> : null}
     </section>
   );

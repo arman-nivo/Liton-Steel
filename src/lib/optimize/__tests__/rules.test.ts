@@ -142,6 +142,15 @@ describe("contrast", () => {
     expect(findByType(r.site.pages[0], "Section")[0].computed?.overlay).toContain("gradient");
     expect(r.adjustments.some((a) => a.rule === "contrast")).toBe(true);
   });
+  it("leaves a dark hero photo clear and removes an overlay it no longer needs", () => {
+    const hero = node("Image", { media: "resort-pool" }, { style: { position: "absolute", top: "0", left: "0", width: "100%", height: "100%" } });
+    const site = siteWith([section([hero, node("Text", { text: { en: "address" } }, { style: { color: "token:gold" } })])]);
+    site.media.find((m) => m.id === "resort-pool")!.brightness = 0.36; // a dusk aerial: gold and white text read fine over it
+    findByType(site.pages[0], "Section")[0].computed = { overlay: "linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.65))" }; // saved by an earlier run
+    const r = optimize(site, 1440, [contrast]);
+    expect(findByType(r.site.pages[0], "Section")[0].computed?.overlay).toBeUndefined();
+    expect(r.adjustments.some((a) => a.message.includes("removed"))).toBe(true);
+  });
 });
 
 describe("overflow", () => {

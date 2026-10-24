@@ -34,7 +34,10 @@ export function Footer({ site, locale }: { site: Site; locale: Locale }) {
         </div>
       </div>
       <div className="bottom">
-        <span>© {new Date().getFullYear()} {t(c.name, locale)}. {ui("rights", locale)}</span>
+        <span className="legal">
+          <span>© {new Date().getFullYear()} {t(c.name, locale)}. {ui("rights", locale)}</span>
+          <span className="credit">{ui("developedBy", locale)} <b>PaiTech Ultimate Solution</b></span>
+        </span>
         <span>{t(site.footer.note, locale)}</span>
       </div>
     </footer>

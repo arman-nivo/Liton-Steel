@@ -6,7 +6,7 @@ import { t } from "@/lib/utils";
 import { attrs, mediaOf, type RenderCtx } from "../context";
 import { Icon as LucideIcon } from "./icons";
 
-/** Background photos sit under a dark overlay, so a lower quality setting is invisible and saves bytes. */
+/** Section photos sit under a dark overlay, so a lower quality setting is invisible and saves bytes. */
 export const BG_QUALITY = 60;
 
 export function LogoMark({ className, style }: { className?: string; style?: React.CSSProperties }) {
@@ -61,7 +61,7 @@ export function ImageEl({ node, ctx }: { node: Node; ctx: RenderCtx }) {
   const style = { margin: 0, ...(m ? { "--ar": `${m.width} / ${m.height}` } : {}), ...(a.style ?? {}) } as React.CSSProperties;
   return (
     <figure {...a} data-ratio={ratio} style={style}>
-      <MediaImage ctx={ctx} media={node.props.media ?? node.props.src} alt={alt} priority={!!(node.props.priority ?? node.computed?.priority)} sizes={node.props.sizes ?? node.computed?.sizes ?? (bg ? "100vw" : undefined)} quality={bg ? BG_QUALITY : undefined} />
+      <MediaImage ctx={ctx} media={node.props.media ?? node.props.src} alt={alt} priority={!!(node.props.priority ?? node.computed?.priority)} sizes={node.props.sizes ?? node.computed?.sizes ?? (bg ? "100vw" : undefined)} />
       {caption ? <figcaption>{caption}</figcaption> : null}
     </figure>
   );
